@@ -480,6 +480,7 @@ static void fluid_do_load(t_sfont *x, t_symbol *name){
     const char* filename = name->s_name;
     const char* ext = strrchr(filename, '.');
     char realdir[MAXPDSTRING], *realname = NULL;
+    char currentdir[MAXPDSTRING];
     int fd;
     if(ext && !strchr(ext, '/')){ // extension already supplied, no default extension
         ext = "";
@@ -502,6 +503,7 @@ static void fluid_do_load(t_sfont *x, t_symbol *name){
         }
     }
     sys_close(fd);
+    getcwd(currentdir, sizeof(currentdir));
     chdir(realdir);
     int id = fluid_synth_sfload(x->x_synth, realname, 0);
     if(id >= 0){
@@ -517,6 +519,7 @@ static void fluid_do_load(t_sfont *x, t_symbol *name){
             SETSYMBOL(&at[0], gensym(pname));
             outlet_anything(x->x_info_out, gensym("pname"), 1, at);
         }
+    chdir(currentdir);
     }
     else
         post("[sfont~]: couldn't load %d", realname);

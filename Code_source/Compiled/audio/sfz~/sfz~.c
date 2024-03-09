@@ -47,6 +47,7 @@ static void sfz_do_open(t_sfz *x, t_symbol *name){
     const char *filename = name->s_name;
     const char *ext = strrchr(filename, '.');
     char realdir[MAXPDSTRING], *realname = NULL;
+    char currentdir[MAXPDSTRING];
     int fd;
     if(ext && !strchr(ext, '/')){ // extension already supplied, no default extension
         ext = "";
@@ -73,8 +74,10 @@ static void sfz_do_open(t_sfz *x, t_symbol *name){
         free(x->x_buf);
         x->x_bufsize = 0;
     }
+    getcwd(currentdir, sizeof(currentdir));
     chdir(realdir);
     sfizz_load_or_import_file(x->x_synth, realname, NULL);
+    chdir(currentdir);
 }
 
 static void sfz_readhook(t_pd *z, t_symbol *fn, int ac, t_atom *av){
